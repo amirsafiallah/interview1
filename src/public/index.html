@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Fetch API Example</title>
+    <script>
+        async function increment() {
+            const result = document.getElementById('result');
+            try {
+                const response = await fetch('/increment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const data = await response.json();
+                result.textContent = data.result;
+            } catch (error) {
+                result.textContent = 'Error: ' + error;
+            }
+        }
+
+        function callMultipleTimes() {
+            for (let count = 0; count < 100; count++) {
+                increment();
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>API Call</h1>
+<button onclick="callMultipleTimes()">Call API</button>
+<pre id="result"></pre>
+</body>
+</html>
