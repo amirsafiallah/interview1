@@ -1,14 +1,27 @@
 import express from "express";
 import path from "path";
 import {read, write} from "./lib/store";
+import { Mutex } from 'async-mutex';
+
+const mutex = new Mutex()
 
 const app = express();
 const port = 3000;
 
 async function increment() {
-    const value = await read();
-    const newValue = value + 1;
-    return write(newValue);
+    const release = await mutex.acquire();
+    try {
+        const value = await read();
+        const newValue = value + 1;
+        const res = await write(newValue);
+        return res;
+    } catch (error) {
+        console.log(error)
+    }
+    finally {
+        console.log();
+        release();
+    }
 }
 
 app.get("/", function (req, res) {
